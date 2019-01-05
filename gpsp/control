@@ -1,0 +1,10 @@
+Package: gpsp
+Version: 
+Description: RetroGame port of gpSP
+Section: emus
+Priority: optional
+Maintainer: pingflood
+Architecture: mipsel
+Homepage: https://github.com/pingflood/gpsp
+Depends:
+Source: https://github.com/pingflood/gpsp

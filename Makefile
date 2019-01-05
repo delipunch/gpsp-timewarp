@@ -1,4 +1,4 @@
-TARGET := release/gpsp.dge
+TARGET := gpsp/gpsp.dge
 
 CHAINPREFIX := /opt/mipsel-linux-uclibc
 CROSS_COMPILE := $(CHAINPREFIX)/usr/bin/mipsel-linux-
@@ -27,6 +27,16 @@ all: $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
+
+ipk: $(TARGET)
+	@rm -rf /tmp/.gpsp-ipk/ && mkdir -p /tmp/.gpsp-ipk/root/home/retrofw/emus/gpsp /tmp/.gpsp-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators
+	@cp gpsp/gpsp.dge gpsp/game_config.txt gpsp/gpsp.png /tmp/.gpsp-ipk/root/home/retrofw/emus/gpsp
+	@cp gpsp/gpsp.lnk /tmp/.gpsp-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators
+	@sed "s/^Version:.*/Version: $$(date +%Y%m%d)/" gpsp/control > /tmp/.gpsp-ipk/control
+	@tar --owner=0 --group=0 -czvf /tmp/.gpsp-ipk/control.tar.gz -C /tmp/.gpsp-ipk/ control
+	@tar --owner=0 --group=0 -czvf /tmp/.gpsp-ipk/data.tar.gz -C /tmp/.gpsp-ipk/root/ .
+	@echo 2.0 > /tmp/.gpsp-ipk/debian-binary
+	@ar r gpsp/gpsp.ipk /tmp/.gpsp-ipk/control.tar.gz /tmp/.gpsp-ipk/data.tar.gz /tmp/.gpsp-ipk/debian-binary
 
 clean:
 	rm -f $(TARGET) $(OBJS)
