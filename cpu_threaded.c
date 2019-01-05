@@ -74,7 +74,7 @@ typedef struct
 
 #elif defined(ZAURUS) && !defined(ARM_ARCH)
 
-#include "dingux/mips_emit.h"
+#include "mips_emit.h"
 
 #else
 
