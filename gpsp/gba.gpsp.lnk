@@ -1,7 +1,6 @@
 title=GBA
 description=gpSP Emulator
 exec=/home/retrofw/emus/gpsp/gpsp.dge
-ipu_mode=1
 selectorbrowser=true
 selectordir=/home/retrofw/roms/gba
 selectorfilter=.zip,.gba
