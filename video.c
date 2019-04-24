@@ -20,6 +20,9 @@
 #include "common.h"
 #include "font.h"
 
+#define GBA_SCREEN_WIDTH 240
+#define GBA_SCREEN_HEIGHT 160
+
 #ifdef PSP_BUILD
 
 #include <pspctrl.h>
@@ -41,8 +44,6 @@ static u32 video_direct = 0;
 
 static u32 __attribute__((aligned(16))) display_list[32];
 
-#define GBA_SCREEN_WIDTH 240
-#define GBA_SCREEN_HEIGHT 160
 
 #define PSP_SCREEN_WIDTH 480
 #define PSP_SCREEN_HEIGHT 272

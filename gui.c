@@ -1160,9 +1160,9 @@ u32 menu(u16 *original_screen)
      "aspect ratio scaled to fill the height of the PSP screen, and\n"
      "fullscreen to fill the entire PSP screen.", 0),
 
-  string_selection_option(NULL, "Show FPS", yes_no_options,
-                          &status_display, 2,
-  "Display fps and some infomation.",1), 
+  // string_selection_option(NULL, "Show FPS", enable_disable_options,
+  //                         &status_display, 2,
+  // "Display fps and some infomation.",1), 
 
 
 #ifndef ZAURUS

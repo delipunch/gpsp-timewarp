@@ -29,10 +29,10 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
 
 ipk: $(TARGET)
-	@rm -rf /tmp/.gpsp-ipk/ && mkdir -p /tmp/.gpsp-ipk/root/home/retrofw/emus/gpsp /tmp/.gpsp-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators /tmp/.gpsp-ipk/root/home/retrofw/apps/gmenu2x/sections/systems
+	@rm -rf /tmp/.gpsp-ipk/ && mkdir -p /tmp/.gpsp-ipk/root/home/retrofw/emus/gpsp /tmp/.gpsp-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators /tmp/.gpsp-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators.systems
 	@cp gpsp/gpsp.dge gpsp/game_config.txt gpsp/gpsp.png /tmp/.gpsp-ipk/root/home/retrofw/emus/gpsp
 	@cp gpsp/gpsp.lnk /tmp/.gpsp-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators
-	@cp gpsp/gba.gpsp.lnk /tmp/.gpsp-ipk/root/home/retrofw/apps/gmenu2x/sections/systems
+	@cp gpsp/gba.gpsp.lnk /tmp/.gpsp-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators.systems
 	@sed "s/^Version:.*/Version: $$(date +%Y%m%d)/" gpsp/control > /tmp/.gpsp-ipk/control
 	@cp gpsp/conffiles gpsp/postinst /tmp/.gpsp-ipk/
 	@tar --owner=0 --group=0 -czvf /tmp/.gpsp-ipk/control.tar.gz -C /tmp/.gpsp-ipk/ control conffiles postinst
