@@ -1,0 +1,9 @@
+#!/bin/sh
+echo "ATTENTION:"
+echo ""
+echo "Add the needed bios:"
+echo ""
+echo "gba_bios.bin"
+echo ""
+echo "to your ROMs directory to make"
+echo "this emulator work correctly."

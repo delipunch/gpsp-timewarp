@@ -34,7 +34,8 @@ ipk: $(TARGET)
 	@cp gpsp/gpsp.lnk /tmp/.gpsp-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators
 	@cp gpsp/gba.gpsp.lnk /tmp/.gpsp-ipk/root/home/retrofw/apps/gmenu2x/sections/systems
 	@sed "s/^Version:.*/Version: $$(date +%Y%m%d)/" gpsp/control > /tmp/.gpsp-ipk/control
-	@tar --owner=0 --group=0 -czvf /tmp/.gpsp-ipk/control.tar.gz -C /tmp/.gpsp-ipk/ control
+	@cp gpsp/conffiles gpsp/postinst /tmp/.gpsp-ipk/
+	@tar --owner=0 --group=0 -czvf /tmp/.gpsp-ipk/control.tar.gz -C /tmp/.gpsp-ipk/ control conffiles postinst
 	@tar --owner=0 --group=0 -czvf /tmp/.gpsp-ipk/data.tar.gz -C /tmp/.gpsp-ipk/root/ .
 	@echo 2.0 > /tmp/.gpsp-ipk/debian-binary
 	@ar r gpsp/gpsp.ipk /tmp/.gpsp-ipk/control.tar.gz /tmp/.gpsp-ipk/data.tar.gz /tmp/.gpsp-ipk/debian-binary
