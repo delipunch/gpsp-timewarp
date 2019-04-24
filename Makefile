@@ -40,4 +40,4 @@ ipk: $(TARGET)
 	@ar r gpsp/gpsp.ipk /tmp/.gpsp-ipk/control.tar.gz /tmp/.gpsp-ipk/data.tar.gz /tmp/.gpsp-ipk/debian-binary
 
 clean:
-	rm -f $(TARGET) $(OBJS) gpsp/gpsp.ipk
+	rm -f $(TARGET) $(OBJS)

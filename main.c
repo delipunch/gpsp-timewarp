@@ -188,35 +188,47 @@ int main(int argc, char *argv[])
   gamepak_filename[0] = 0;
 
   sprintf(bios_file, "%s/gba_bios.bin", main_path);
+
+  if (argc > 1) {
+    sprintf(bios_file, "%s", argv[1]);
+    dirname(bios_file);
+    sprintf(bios_file, "%s/gba_bios.bin", bios_file);
+  }
+  printf("bios_file: %s\n", bios_file);
+  printf("argv[1]: %s\n", argv[1]);
   if(load_bios(bios_file) == -1)
   {
-#ifdef PSP_BUILD
-    gui_action_type gui_action = CURSOR_NONE;
-
-    printf("Sorry, but gpSP requires a Gameboy Advance BIOS image to run\n");
-    printf("correctly. Make sure to get an authentic one (search the web,\n");
-    printf("beg other people if you want, but don't hold me accountable\n");
-    printf("if you get hated or banned for it), it'll be exactly 16384\n");
-    printf("bytes large and should have the following md5sum value:\n\n");
-    printf("a860e8c0b6d573d191e4ec7db1b1e4f6\n\n");
-    printf("Other BIOS files might work either partially completely, I\n");
-    printf("really don't know.\n\n");
-    printf("When you do get it name it gba_bios.bin and put it in the\n");
-    printf("same directory as this EBOOT.\n\n");
-    printf("Good luck. Press any button to exit.\n");
-
-    while(gui_action == CURSOR_NONE)
+    sprintf(bios_file, "%s/gba_bios.bin", main_path);
+    if(load_bios(bios_file) == -1)
     {
-      gui_action = get_gui_input();
-      delay_us(15000);
-    }
+    #ifdef PSP_BUILD
+      gui_action_type gui_action = CURSOR_NONE;
 
-    quit();
-#endif
-#ifdef ZAURUS
-      printf("Failed to load bios.\n");
+      printf("Sorry, but gpSP requires a Gameboy Advance BIOS image to run\n");
+      printf("correctly. Make sure to get an authentic one (search the web,\n");
+      printf("beg other people if you want, but don't hold me accountable\n");
+      printf("if you get hated or banned for it), it'll be exactly 16384\n");
+      printf("bytes large and should have the following md5sum value:\n\n");
+      printf("a860e8c0b6d573d191e4ec7db1b1e4f6\n\n");
+      printf("Other BIOS files might work either partially completely, I\n");
+      printf("really don't know.\n\n");
+      printf("When you do get it name it gba_bios.bin and put it in the\n");
+      printf("same directory as this EBOOT.\n\n");
+      printf("Good luck. Press any button to exit.\n");
+
+      while(gui_action == CURSOR_NONE)
+      {
+        gui_action = get_gui_input();
+        delay_us(15000);
+      }
+
       quit();
-#endif
+    #endif
+    #ifdef ZAURUS
+    printf("Failed to load bios.\n");
+    quit();
+    #endif
+    }
   }
 
 #ifdef PSP_BUILD
