@@ -533,17 +533,20 @@ u32 update_gba()
           flush_ram_count = 0;
   #endif
 
-          if(update_input())
-            continue;
+          if(update_input()){
+
+                      continue;
+                    }
 
           update_gbc_sound(cpu_ticks);
           synchronize();
 
           update_screen();
 
-          if(update_backup_flag)
-            update_backup();
+          if(update_backup_flag){
 
+                      update_backup();
+          }
           process_cheats();
 #if 0
           event_cycles++;
@@ -575,9 +578,10 @@ u32 update_gba()
       io_registers[REG_DISPSTAT] = dispstat;
     }
 
-    if(irq_raised)
-      raise_interrupt(irq_raised);
+    if(irq_raised){
 
+          raise_interrupt(irq_raised);
+    }
     execute_cycles = video_count;
 
     check_timer(0);
@@ -705,7 +709,9 @@ void synchronize()
 #endif
   frames++;
 
-  if(frames == 60)
+
+
+  if(frames >= 60)
   {
     if(status_display) {
       us_needed = (float)ticks_needed_total / frame_interval;
@@ -791,15 +797,15 @@ void synchronize()
 
 //  if(synchronize_flag == 0)
 //    print_string("--FF--", 0xFFFF, 0x000, 0, 0);
-#ifdef ZAURUS
-  //sprintf(char_buffer, "%.1ffps", 1000000.0 / us_needed);
-  //print_string("        ", 0xFFFF, 0x000, 40, 30);
-  //print_string(char_buffer, 0xFFFF, 0x000, 40, 30);
-#else
-  sprintf(char_buffer, "gpSP: %.1fms %.1ffps", us_needed / 1000.0,
-   1000000.0 / us_needed);
-  SDL_WM_SetCaption(char_buffer, "gpSP");
-#endif
+// #ifdef ZAURUS
+//   sprintf(char_buffer, "%.1ffps", 1000000.0 / us_needed);
+//   print_string("        ", 0xFFFF, 0x000, 40, 30);
+//   print_string(char_buffer, 0xFFFF, 0x000, 40, 30);
+// #else
+//   sprintf(char_buffer, "gpSP: %.1fms %.1ffps", us_needed / 1000.0,
+//    1000000.0 / us_needed);
+//   SDL_WM_SetCaption(char_buffer, "gpSP");
+// #endif
 
 /*
     sprintf(char_buffer, "%02d %02d %06d %07d", frameskip, (u32)ms_needed,

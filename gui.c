@@ -683,7 +683,8 @@ s32 load_game_config_file()
   if(file_loaded)
     return 0;
 
-  current_frameskip_type = auto_frameskip;
+  // current_frameskip_type = auto_frameskip;
+  current_frameskip_type = no_frameskip;
   frameskip_value = 4;
   random_skip = 0;
   clock_speed = 4;
@@ -1160,9 +1161,9 @@ u32 menu(u16 *original_screen)
      "aspect ratio scaled to fill the height of the PSP screen, and\n"
      "fullscreen to fill the entire PSP screen.", 0),
 
-  // string_selection_option(NULL, "Show FPS", enable_disable_options,
-  //                         &status_display, 2,
-  // "Display fps and some infomation.",1), 
+  string_selection_option(NULL, "Show FPS", enable_disable_options,
+                          &status_display, 2,
+  "Display fps and some infomation.",1), 
 
 
 #ifndef ZAURUS

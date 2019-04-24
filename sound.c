@@ -315,6 +315,7 @@ u32 gbc_sound_master_volume;
   while(((gbc_sound_buffer_index - sound_buffer_base) % BUFFER_SIZE) >        \
    (audio_buffer_size * 2))                                                   \
   {                                                                           \
+\
     SDL_CondWait(sound_cv, sound_mutex);                                      \
   }                                                                           \
 
@@ -473,10 +474,10 @@ void update_gbc_sound(u32 cpu_ticks)
   }
 
   SDL_LockMutex(sound_mutex);
-  if(synchronize_flag && current_frameskip_type != auto_frameskip)
+ if(synchronize_flag)
   {
-    if(((gbc_sound_buffer_index - sound_buffer_base) % BUFFER_SIZE) >
-     (audio_buffer_size * 3 / 2))
+    if(((gbc_sound_buffer_index - sound_buffer_base) % BUFFER_SIZE) >=
+     (audio_buffer_size * 2))
     {
       while(((gbc_sound_buffer_index - sound_buffer_base) % BUFFER_SIZE) >
        (audio_buffer_size * 3 / 2))
@@ -491,27 +492,23 @@ void update_gbc_sound(u32 cpu_ticks)
         real_frame_count = 0;
         virtual_frame_count = 0;
       }
-#endif
-
-/*
-
-#ifdef GP2X_BUILD
+#else
       if(current_frameskip_type == auto_frameskip)
       {
+/*
         u64 current_ticks;
         u64 next_ticks;
         get_ticks_us(&current_ticks);
-
         next_ticks = ((current_ticks + 16666) / 16667) * 16667;
         delay_us(next_ticks - current_ticks);
-
         get_ticks_us(&frame_count_initial_timestamp);
-        real_frame_count = 0;
-        virtual_frame_count = 0;
+*/
+        /* prevent frameskip, or it will cause more audio,
+   * then more waiting here, then frame skip again, ... */
+        // num_skipped_frames = 100;
       }
 #endif
 
-*/
     }
   }
   if(sound_on == 1)

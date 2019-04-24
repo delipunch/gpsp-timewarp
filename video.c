@@ -3719,16 +3719,26 @@ void update_display(void)
   if(screen_scale == 0) {
     SDL_BlitSurface(screen,NULL,display,NULL);
     // if(SDL_MUSTLOCK(display)) SDL_LockSurface(display);
-    // int x, y;
     // uint32_t *s = (uint32_t*)screen->pixels;
     // uint32_t *d = (uint32_t*)display->pixels;
-    // for(y=0; y<240; y++){
-    //   for(x=0; x<160; x++){
+    // for(int y = 0; y < 240; y++){
+    //   for(int x = 0; x < 160; x++){
     //     *d++ = *s++;
     //   }
     //   d+= 160;
     // }
     // if(SDL_MUSTLOCK(display)) SDL_UnlockSurface(display);
+
+
+    // uint32_t *d = (uint32_t*)display->pixels;
+    // uint32_t *s = (uint32_t*)screen->pixels;
+    // for (int y = 0; y < display->h; y++)
+    // {
+    //     memmove(d, s, display->w * sizeof(uint32_t));
+    //     s += display->w * sizeof(uint32_t);
+    //     d += display->pitch;
+    // }
+
   }
   else if(screen_scale == 1) { // scale
     uint32_t *src = (uint32_t *)screen->pixels + 20 + 80 * (320 - 240);
@@ -3912,7 +3922,11 @@ void init_video()
 //	  exit(1);
   }
   //screen = SDL_SetVideoMode(320, 240, 16, SDL_FULLSCREEN);
-  display = SDL_SetVideoMode(320, 240, 16, SDL_HWSURFACE | SDL_DOUBLEBUF);
+  display = SDL_SetVideoMode(320, 240, 16, SDL_HWSURFACE
+#ifdef SDL_TRIPLEBUF
+ | SDL_TRIPLEBUF
+#endif
+    );
   screen = SDL_CreateRGBSurface(SDL_SWSURFACE,320,240,16,
 								display->format->Rmask,
 								display->format->Gmask,

@@ -15,11 +15,15 @@ OBJS := main.o cpu.o memory.o video.o input.o sound.o gui.o \
 
 INCLUDE     := -I. -I$(CHAINPREFIX)/usr/include/ -I$(SYSROOT)/usr/include/  -I$(SYSROOT)/usr/include/SDL/
 
-CFLAGS := $(SDL_CFLAGS) $(INCLUDE) -Wall -fomit-frame-pointer -DZAURUS
-CFLAGS      += -ggdb -O0
+CFLAGS := $(SDL_CFLAGS) $(INCLUDE) -Wall -Ofast -fomit-frame-pointer -DZAURUS -mplt -mips32 -fdata-sections -ffunction-sections
+CFLAGS += -mno-relax-pic-calls -mlong32 -mlocal-sdata -mframe-header-opt -mno-check-zero-division -mfp32 -mgp32 -mno-embedded-data -fno-pic -mno-interlink-compressed -mno-mt -mno-micromips -mno-interlink-mips16
+CFLAGS += -fdata-sections -ffunction-sections -fno-threadsafe-statics  -fno-math-errno -funsafe-math-optimizations -fassociative-math -ffinite-math-only -fsingle-precision-constant -fsection-anchors -falign-functions=2 -mno-check-zero-division
+# CFLAGS += -fprofile-use
+# CFLAGS      += -ggdb -O0
 ASFLAGS := $(CFLAGS)
-LDFLAGS := $(SDL_LIBS) -lpthread -lz -lm
-LDFLAGS      += -ggdb -O0
+# LDFLAGS := $(SDL_LIBS) -lpthread -lz -lm
+LDFLAGS := $(SDL_LIBS) -lpthread -lz -lm -Wl,--as-needed -Wl,--gc-sections -flto -s
+# LDFLAGS      += -ggdb -O0
 
 .PHONY: all $(TARGET) clean
 
