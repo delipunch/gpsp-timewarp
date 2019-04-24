@@ -49,7 +49,7 @@
 
 #endif
 
-#define COLOR_BG            color16(20, 10, 10)
+#define COLOR_BG            color16(5, 5, 10)
 #define COLOR_ROM_INFO      color16(22, 36, 26)
 #define COLOR_ACTIVE_ITEM   color16(31, 63, 31)
 #define COLOR_INACTIVE_ITEM color16(13, 40, 18)
@@ -1153,12 +1153,18 @@ u32 menu(u16 *original_screen)
   // Marker for help information, don't go past this mark (except \n)------*
   menu_option_type graphics_sound_options[] =
   {
-    string_selection_option(NULL, "Display scaling", scale_options,
+    string_selection_option(NULL, "Scaling", scale_options,
      (u32 *)(&screen_scale), 2,
      "Determines how the GBA screen is resized in relation to the entire\n"
      "screen. Select unscaled 3:2 for GBA resolution, scaled 3:2 for GBA\n"
      "aspect ratio scaled to fill the height of the PSP screen, and\n"
-     "fullscreen to fill the entire PSP screen.", 2),
+     "fullscreen to fill the entire PSP screen.", 0),
+
+  string_selection_option(NULL, "Show FPS", yes_no_options,
+                          &status_display, 2,
+  "Display fps and some infomation.",1), 
+
+
 #ifndef ZAURUS
     string_selection_option(NULL, "Screen filtering", yes_no_options,
      (u32 *)(&screen_filter), 2,
@@ -1173,22 +1179,22 @@ u32 menu(u16 *original_screen)
      "Frameskipping may improve emulation speed of many games.\n"
      "Off: Do not skip any frames.\n"
      "Auto: Skip up to N frames (see next option) as needed.\n"
-     "Manual: Always render only 1 out of N + 1 frames.", 5),
+     "Manual: Always render only 1 out of N + 1 frames.", 2),
     numeric_selection_option(NULL, "Frameskip value", &frameskip_value, 100,
      "For auto frameskip, determines the maximum number of frames that\n"
      "are allowed to be skipped consecutively.\n"
      "For manual frameskip, determines the number of frames that will\n"
-     "always be skipped.", 6),
+     "always be skipped.", 3),
     string_selection_option(NULL, "Framskip variation",
      frameskip_variation_options, &random_skip, 2,
      "If objects in the game flicker at a regular rate certain manual\n"
      "frameskip values may cause them to normally disappear. Change this\n"
      "value to 'random' to avoid this. Do not use otherwise, as it tends to\n"
-     "make the image quality worse, especially in high motion games.", 7),
-    string_selection_option(NULL, "Audio output", yes_no_options,
+     "make the image quality worse, especially in high motion games.", 4),
+    string_selection_option(NULL, "Audio enabled", yes_no_options,
      &global_enable_audio, 2,
      "Select 'no' to turn off all audio output. This will not result in a\n"
-     "significant change in performance.", 9),
+     "significant change in performance.", 6),
 #ifndef PSP_BUILD
     string_selection_option(NULL, "Audio buffer", audio_buffer_options,
            &audio_buffer_size_number, 4,
@@ -1200,12 +1206,9 @@ u32 menu(u16 *original_screen)
      "in slightly better performance at the cost of latency; the lowest\n"
      "value will give the most responsive audio.\n"
      "This option requires gpSP to be restarted before it will take effect.",
-     10),
-	string_selection_option(NULL, "Status Display", enable_disable_options,
-													&status_display, 2,
-	"Display fps and some infomation.",12), 
+     7),
 
-    submenu_option(NULL, "Back", "Return to the main menu.", 14)
+    // submenu_option(NULL, "Back", "Return to the main menu.", 14)
   };
 
   make_menu(graphics_sound, submenu_graphics_sound, NULL);
@@ -1304,23 +1307,20 @@ u32 menu(u16 *original_screen)
 
   menu_option_type main_options[] =
   {
-    submenu_option(&graphics_sound_menu, "Graphics and Sound options",
-     "Select to set display parameters and frameskip behavior,\n"
-     "audio on/off, audio buffer size, and audio filtering.", 0),
     numeric_selection_action_option(menu_load_state, NULL,
-     "Load state from slot", &savestate_slot, 10,
+     "Load state", &savestate_slot, 10,
      "Select to load the game state from the current slot for this game,\n"
      "if it exists (see the extended menu for more information)\n"
-     "Press left + right to change the current slot.", 2),
+     "Press left + right to change the current slot.", 0),
     numeric_selection_action_option(menu_save_state, NULL,
-     "Save state to slot", &savestate_slot, 10,
+     "Save state", &savestate_slot, 10,
      "Select to save the game state to the current slot for this game.\n"
      "See the extended menu for more information.\n"
-     "Press left + right to change the current slot.", 3),
-    submenu_option(&savestate_menu, "Savestate options",
-     "Select to enter a menu for loading, saving, and viewing the\n"
-     "currently active savestate for this game (or to load a savestate\n"
-     "file from another game)", 4),
+     "Press left + right to change the current slot.", 1),
+//     submenu_option(&savestate_menu, "Savestate options",
+//      "Select to enter a menu for loading, saving, and viewing the\n"
+//      "currently active savestate for this game (or to load a savestate\n"
+//      "file from another game)", 2),
 #ifndef ZAURUS
     submenu_option(&gamepad_config_menu, "Configure gamepad input",
      "Select to change the in-game behavior of the PSP buttons and d-pad.",
@@ -1328,15 +1328,17 @@ u32 menu(u16 *original_screen)
     submenu_option(&analog_config_menu, "Configure analog input",
      "Select to change the in-game behavior of the PSP analog nub.", 7),
 #endif
-    submenu_option(&cheats_misc_menu, "Cheats and Miscellaneous options",
+    submenu_option(&cheats_misc_menu, "Cheats",
      "Select to manage cheats, set backup behavior, and set device clock\n"
-     "speed.", 9),
-    action_option(menu_restart, NULL, "Restart game",
-     "Select to reset the GBA with the current game loaded.", 11),
-    action_option(menu_exit, NULL, "Return to game",
-     "Select to exit this menu and resume gameplay.", 12),
-    action_option(menu_quit, NULL, "Exit gpSP",
-     "Select to exit gpSP and return to the PSP XMB/loader.", 14)
+     "speed.", 2),
+    submenu_option(&graphics_sound_menu, "Settings",
+     "Select to set display parameters and frameskip behavior,\n"
+     "audio on/off, audio buffer size, and audio filtering.", 4),
+    action_option(menu_restart, NULL, "Reset",
+     "Select to reset the GBA with the current game loaded.", 6),
+    // action_option(menu_exit, NULL, "Return to game", "Select to exit this menu and resume gameplay.", 12),
+    action_option(menu_quit, NULL, "Exit",
+     "Select to exit gpSP and return to the PSP XMB/loader.", 7)
   };
 
   make_menu(main, submenu_main, NULL);
