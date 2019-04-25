@@ -34,7 +34,7 @@ $(TARGET): $(OBJS)
 
 ipk: $(TARGET)
 	@rm -rf /tmp/.gpsp-ipk/ && mkdir -p /tmp/.gpsp-ipk/root/home/retrofw/emus/gpsp /tmp/.gpsp-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators /tmp/.gpsp-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators.systems
-	@cp gpsp/gpsp.dge gpsp/game_config.txt gpsp/gpsp.png /tmp/.gpsp-ipk/root/home/retrofw/emus/gpsp
+	@cp gpsp/gpsp.dge gpsp/gba_bios.bin gpsp/game_config.txt gpsp/gpsp.png /tmp/.gpsp-ipk/root/home/retrofw/emus/gpsp
 	@cp gpsp/gpsp.lnk /tmp/.gpsp-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators
 	@cp gpsp/gba.gpsp.lnk /tmp/.gpsp-ipk/root/home/retrofw/apps/gmenu2x/sections/emulators.systems
 	@sed "s/^Version:.*/Version: $$(date +%Y%m%d)/" gpsp/control > /tmp/.gpsp-ipk/control
