@@ -3,5 +3,5 @@ description=GBA Emulator
 exec=/home/retrofw/emus/gpsp/gpsp.dge
 selectorbrowser=true
 selectordir=/home/retrofw/roms/gba
-selectorfilter=.zip,.gba
+selectorfilter=.zip,.gba,.bin
 clock=600
