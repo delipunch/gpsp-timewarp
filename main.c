@@ -533,20 +533,14 @@ u32 update_gba()
           flush_ram_count = 0;
   #endif
 
-          if(update_input()){
-
-                      continue;
-                    }
+          if(update_input()) continue;
 
           update_gbc_sound(cpu_ticks);
           synchronize();
-
           update_screen();
 
-          if(update_backup_flag){
+          if(update_backup_flag) update_backup();
 
-                      update_backup();
-          }
           process_cheats();
 #if 0
           event_cycles++;
@@ -718,18 +712,19 @@ void synchronize()
       fpsw = (u32)(1000000.0 / us_needed);
       ticks_needed_total = 0;
       if(current_frameskip_type == manual_frameskip) {
-        sprintf(char_buffer, "%s%3dfps %s:%d slot:%d ", synchronize_flag?"  ":">>", fpsw,
+        sprintf(char_buffer, "%s%3dfps %s: %d slot: %d ", synchronize_flag?"  ":">>", fpsw,
           current_frameskip_type==auto_frameskip?"Auto":current_frameskip_type==manual_frameskip?"Manu":"Off ",
           frameskip_value, savestate_slot);
       } else {
-        sprintf(char_buffer, "%s%3dfps %s:%d slot:%d ", synchronize_flag?"  ":">>",
+        sprintf(char_buffer, "%s%3dfps %s: %d slot: %d ", synchronize_flag?"  ":">>",
          (skipped_num_frame==60&&fpsw>60)?fpsw:skipped_num_frame,
           current_frameskip_type==auto_frameskip?"Auto":current_frameskip_type==manual_frameskip?"Manu":"Off ",
           frameskip_value, savestate_slot);
       }
     } else
       strcpy(char_buffer, "                             ");
-    print_string(char_buffer, 0xFFFF, 0x000, 40, 30);
+
+    print_string(char_buffer, 0xFFFF, 0x000, 1, 1);
     print_string(ssmsg, 0xF000, 0x000, 180, 30);
     strcpy(ssmsg, "     ");
     frames = 0;

@@ -37,7 +37,7 @@
 #define DIR_LIST_POSITION 360
 #endif
 
-#ifdef PSP_BUILD
+#if 0 // def PSP_BUILD
 
 #define color16(red, green, blue)                                             \
   (blue << 11) | (green << 5) | red                                           \
@@ -431,7 +431,7 @@ s32 load_file(u8 **wildcards, u8 *result)
           break;
 
         case CURSOR_BACK:
-#ifdef PSP_BUILD
+#if 0 //def PSP_BUILD
           if(!strcmp(current_dir_name, "ms0:/PSP"))
             break;
 #endif
@@ -674,7 +674,6 @@ s32 load_game_config_file()
       if(frameskip_value > 99)
         frameskip_value = 99;
 
-
       file_close(game_config_file);
       file_loaded = 1;
     }
@@ -731,29 +730,30 @@ s32 load_config_file()
       update_backup_flag = file_options[4] % 2;
       global_enable_analog = file_options[5] % 2;
       analog_sensitivity_level = file_options[6] % 8;
+      status_display = file_options[7] % 2;
 
-#ifdef PSP_BUILD
+#if 0 // def PSP_BUILD
     scePowerSetClockFrequency(clock_speed, clock_speed, clock_speed / 2);
 #endif
 
       // Sanity check: Make sure there's a MENU or FRAMESKIP
       // key, if not assign to triangle
 
-      for(i = 0; i < 16; i++)
-      {
-        gamepad_config_map[i] = file_options[7 + i] %
-         (BUTTON_ID_NONE + 1);
+      // for(i = 0; i < 16; i++)
+      // {
+      //   gamepad_config_map[i] = file_options[8 + i] %
+      //    (BUTTON_ID_NONE + 1);
 
-        if(gamepad_config_map[i] == BUTTON_ID_MENU)
-        {
-          menu_button = i;
-        }
-      }
+      //   if(gamepad_config_map[i] == BUTTON_ID_MENU)
+      //   {
+      //     menu_button = i;
+      //   }
+      // }
 
-      if(menu_button == -1)
-      {
-        gamepad_config_map[0] = BUTTON_ID_MENU;
-      }
+      // if(menu_button == -1)
+      // {
+      //   gamepad_config_map[0] = BUTTON_ID_MENU;
+      // }
 
       file_close(config_file);
     }
@@ -821,10 +821,11 @@ s32 save_config_file()
     file_options[4] = update_backup_flag;
     file_options[5] = global_enable_analog;
     file_options[6] = analog_sensitivity_level;
+    file_options[7] = status_display;
 
     for(i = 0; i < 16; i++)
     {
-      file_options[7 + i] = gamepad_config_map[i];
+      file_options[8 + i] = gamepad_config_map[i];
     }
 
     file_write_array(config_file, file_options);
@@ -912,7 +913,7 @@ void get_savestate_filename_noshot(u32 slot, u8 *name_buffer)
   change_ext(gamepak_filename, name_buffer, savestate_ext);
 }
 
-#ifdef PSP_BUILD
+#if 0 // def PSP_BUILD
   void _flush_cache()
   {
     sceKernelDcacheWritebackAll();
@@ -1161,7 +1162,7 @@ u32 menu(u16 *original_screen)
      "aspect ratio scaled to fill the height of the PSP screen, and\n"
      "fullscreen to fill the entire PSP screen.", 0),
 
-  string_selection_option(NULL, "Show FPS", enable_disable_options,
+  string_selection_option(NULL, "Show FPS", yes_no_options,
                           &status_display, 2,
   "Display fps and some infomation.",1), 
 
