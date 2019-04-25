@@ -1023,11 +1023,11 @@ u32 menu(u16 *original_screen)
   {
     if(!first_load)
     {
-      get_savestate_filename_noshot(savestate_slot,
-       current_savestate_filename);
+      get_savestate_filename_noshot(savestate_slot, current_savestate_filename);
       save_state(current_savestate_filename, original_screen);
     }
     menu_change_state();
+    menu_exit();
   }
 
   void menu_load_state()
@@ -1038,6 +1038,7 @@ u32 menu(u16 *original_screen)
       return_value = 1;
       repeat = 0;
     }
+    menu_exit();
   }
 
   void menu_load_state_file()
