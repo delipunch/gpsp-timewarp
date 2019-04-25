@@ -1872,7 +1872,8 @@ u32 load_backup(char *name)
       // Could be either flash or SRAM, go with flash
       case 0x10000:
         backup_type = BACKUP_FLASH;
-        sram_size = FLASH_SIZE_64KB;
+        sram_size = SRAM_SIZE_64KB;
+        flash_size = FLASH_SIZE_64KB;
         break;
 
       case 0x20000:
@@ -2166,6 +2167,10 @@ u32 load_gamepak(char *name)
   if(file_size != -1)
   {
     gamepak_size = (file_size + 0x7FFF) & ~0x7FFF;
+
+    sram_size = SRAM_SIZE_32KB;
+    flash_size = FLASH_SIZE_64KB;
+    eeprom_size = EEPROM_512_BYTE;
 
     strcpy(backup_filename, name);
     strncpy(gamepak_filename, name, 512);
@@ -3087,12 +3092,8 @@ void init_memory()
 
   backup_type = BACKUP_NONE;
 
-  sram_size = SRAM_SIZE_32KB;
-  flash_size = FLASH_SIZE_64KB;
-
   flash_bank_ptr = gamepak_backup;
   flash_command_position = 0;
-  eeprom_size = EEPROM_512_BYTE;
   eeprom_mode = EEPROM_BASE_MODE;
   eeprom_address = 0;
   eeprom_counter = 0;
