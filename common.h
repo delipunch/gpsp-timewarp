@@ -183,6 +183,7 @@ typedef u32 fixed16_16;
 #include "gui.h"
 #include "zip.h"
 #include "cheats.h"
+#include "sha1.h"
 
 #ifdef PSP_BUILD
   #define printf pspDebugScreenPrintf

@@ -11,7 +11,7 @@ SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
 SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
 
 OBJS := main.o cpu.o memory.o video.o input.o sound.o gui.o \
-	cheats.o zip.o cpu_threaded.o mips_stub.o
+	cheats.o zip.o cpu_threaded.o mips_stub.o sha1.o
 
 INCLUDE     := -I. -I$(CHAINPREFIX)/usr/include/ -I$(SYSROOT)/usr/include/  -I$(SYSROOT)/usr/include/SDL/
 
