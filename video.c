@@ -4190,7 +4190,7 @@ void print_string_ext(const char *str, u16 fg_color, u16 bg_color,
         {
           if((current_row >> (15 - i3)) & 0x01)
             *dest_ptr = fg_color;
-          else
+          else if (bg_color != 0x0000)
             *dest_ptr = bg_color;
           dest_ptr++;
         }

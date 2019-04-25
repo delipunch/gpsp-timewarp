@@ -886,7 +886,7 @@ void get_savestate_snapshot(u8 *savestate_filename)
   {
     memset(snapshot_buffer, 0, 240 * 160 * 2);
     print_string_ext("No savestate exists for this slot.",
-     0xFFFF, 0x0000, 15, 75, snapshot_buffer, 240, 0);
+     0xFFFF, 0x000F, 15, 75, snapshot_buffer, 240, 0);
     print_string("---------- --/--/---- --:--:--          ", COLOR_HELP_TEXT,
      COLOR_BG, 10, 40);
   }
@@ -1381,7 +1381,7 @@ u32 menu(u16 *original_screen)
   {
     first_load = 1;
     memset(original_screen, 0x00, 240 * 160 * 2);
-    print_string_ext("No game loaded yet.", 0xFFFF, 0x0000,
+    print_string_ext("No game loaded yet.", 0xFFFF, 0x000F,
      60, 75,original_screen, 240, 0);
   }
 
