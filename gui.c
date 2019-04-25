@@ -1528,6 +1528,7 @@ u32 menu(u16 *original_screen)
   clear_screen(0);
   flip_screen();
   flip_screen();
+  flip_screen();
 #endif
   return return_value;
 }
