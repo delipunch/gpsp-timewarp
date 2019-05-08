@@ -499,9 +499,7 @@ gui_action_type get_gui_input()
 			{
 				switch(event.key.keysym.sym)
 				{
-			case SDLK_SPACE:
-					case SDLK_ESCAPE:
-			case SDLK_LALT:
+					case RG_B:
 						gui_action = CURSOR_EXIT;
 						break;
 
@@ -521,12 +519,11 @@ gui_action_type get_gui_input()
 						gui_action = CURSOR_RIGHT;
 						break;
 
-					case SDLK_RETURN:
-			case SDLK_LCTRL:
+					case RG_A:
 						gui_action = CURSOR_SELECT;
 						break;
 
-					case SDLK_BACKSPACE:
+					case RG_X:
 						gui_action = CURSOR_BACK;
 						break;
 				}
@@ -548,6 +545,7 @@ gui_action_type get_gui_input_fs_hold(u32 button_id)
 u32 update_input()
 {
 	SDL_Event event;
+	uint8_t *keys = SDL_GetKeyState(NULL);
 
 	while(SDL_PollEvent(&event))
 	{
@@ -560,16 +558,107 @@ u32 update_input()
 			{
 				switch(event.key.keysym.sym)
 				{
-					case RG_POWER:
-					// case RG_SELECT:
+					case RG_SELECT:
 					{
-						u16 *screen_copy = copy_screen();
-						u32 ret_val = menu(screen_copy);
-						free(screen_copy);
-						key = 0;
-						io_registers[REG_P1] = 0x3FF;
-						return ret_val;
+						uint32_t release_keydown = SDL_GetTicks() + 500;
+						while (keys[RG_SELECT]) {
+							SDL_PumpEvents();
+
+							if (keys[RG_R]) {
+								u8 current_savestate_filename[512];
+								u16 *current_screen = copy_screen();
+								get_savestate_filename_noshot(savestate_slot, current_savestate_filename);
+								if(save_state(current_savestate_filename, current_screen))
+								strcpy(ssmsg, "saved");
+								free(current_screen);
+								return 0;
+							} else if (keys[RG_L]) {
+								u8 current_savestate_filename[512];
+								get_savestate_filename_noshot(savestate_slot, current_savestate_filename);
+								if(load_state(current_savestate_filename))
+								strcpy(ssmsg, "loaded");
+								current_debug_state = STEP;
+								return 0;
+							} else if (keys[RG_X]) {
+								synchronize_flag ^= 1;
+								return 0;
+							} else if (keys[RG_START]) {
+								goto open_menu;
+								break;
+							}
+							if (release_keydown < SDL_GetTicks()) break;
+						}
+
+						key |= key_map(RG_SELECT);
+						trigger_key(key);
+
+						goto not_combo;
+						break;
+
+
+
+
+
+
+
+
+
+	// uint32_t release_keydown = SDL_GetTicks() + 200;
+	// while (keys[RG_SELECT]) {
+	// 	SDL_PumpEvents();
+
+	// 	if (keys[RG_R]) {
+	// 		u8 current_savestate_filename[512];
+	// 		u16 *current_screen = copy_screen();
+	// 		get_savestate_filename_noshot(savestate_slot, current_savestate_filename);
+	// 		if(save_state(current_savestate_filename, current_screen))
+	// 		strcpy(ssmsg, "saved");
+	// 		free(current_screen);
+	// 		return 0;
+	// 	} else if (keys[RG_L]) {
+	// 		u8 current_savestate_filename[512];
+	// 		get_savestate_filename_noshot(savestate_slot, current_savestate_filename);
+	// 		if(load_state(current_savestate_filename))
+	// 		strcpy(ssmsg, "loaded");
+	// 		current_debug_state = STEP;
+	// 		return 0;
+	// 	} else if (keys[RG_X]) {
+	// 		synchronize_flag ^= 1;
+	// 		return 0;
+	// 		// break;
+	// 	// } else if (keys[RG_START]) {
+	// 		// goto open_menu;
+	// 		// break;
+	// 	}
+	// 	if (release_keydown < SDL_GetTicks()) 
+	// 		break;
+	// 		// io_registers[REG_P1] = (~key) & 0x3FF;
+	// 	SDL_Delay(1);
+	// 	// usleep(1000);
+	// }
+	// // keys[RG_SELECT] = 1;
+	// // goto not_combo;
+
+
+
+
+
+
+
+
+
 					}
+
+					case RG_POWER:
+						open_menu:
+						{
+							u16 *screen_copy = copy_screen();
+							u32 ret_val = menu(screen_copy);
+							free(screen_copy);
+							key = 0;
+							io_registers[REG_P1] = 0x3FF;
+							return ret_val;
+						}
 #if 0 
 					case SDLK_F1:
 					{
@@ -696,12 +785,13 @@ u32 update_input()
 					}
 				}
 				break;
-				}
+			}
 
 			case SDL_KEYUP:
 			{
 				key &= ~(key_map(event.key.keysym.sym));
 				break;
+
 			}
 
 			case SDL_JOYAXISMOTION:
@@ -734,6 +824,7 @@ u32 update_input()
 		}
 	}
 
+	not_combo: /* skip select + start combo*/;
 	io_registers[REG_P1] = (~key) & 0x3FF;
 
 	return 0;
