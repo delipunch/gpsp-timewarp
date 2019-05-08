@@ -3718,33 +3718,9 @@ void update_display(void)
 {
   if(screen_scale == 0) {
     SDL_BlitSurface(screen,NULL,display,NULL);
-    // if(SDL_MUSTLOCK(display)) SDL_LockSurface(display);
-    // uint32_t *s = (uint32_t*)screen->pixels;
-    // uint32_t *d = (uint32_t*)display->pixels;
-    // for(int y = 0; y < 240; y++){
-    //   for(int x = 0; x < 160; x++){
-    //     *d++ = *s++;
-    //   }
-    //   d+= 160;
-    // }
-    // if(SDL_MUSTLOCK(display)) SDL_UnlockSurface(display);
-
-
-    // uint32_t *d = (uint32_t*)display->pixels;
-    // uint32_t *s = (uint32_t*)screen->pixels;
-    // for (int y = 0; y < display->h; y++)
-    // {
-    //     memmove(d, s, display->w * sizeof(uint32_t));
-    //     s += display->w * sizeof(uint32_t);
-    //     d += display->pitch;
-    // }
-
   }
   else if(screen_scale == 1) { // scale
     uint32_t *src = (uint32_t *)screen->pixels + 20 + 80 * (320 - 240);
-    // gba_upscale_aspect((uint16_t*) ((uint8_t*)display->pixels + (((240 - (160) * 4 / 3) / 2) * display->pitch)), 
-      // src, 240, 160, screen->pitch, display->pitch);
-
     gba_upscale_aspect((uint16_t*) ((uint8_t*)
           display->pixels +
           (((240 - (GBA_SCREEN_HEIGHT) * 4 / 3) / 2) * display->pitch)) /* center vertically */,
@@ -3753,7 +3729,6 @@ void update_display(void)
   else if(screen_scale == 2) { // fullscreen
     uint32_t *src = (uint32_t *)screen->pixels + 20 + 80 * (320 - 240);
     gba_upscale((uint32_t*)display->pixels, src, 240, 160, 320 - 240);
-    // gba_upscale((uint32_t*)display->pixels, src, 240, 160, screen->pitch, display->pitch);
   }
 
   SDL_Flip(display);
