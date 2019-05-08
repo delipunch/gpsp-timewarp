@@ -590,10 +590,11 @@ u32 update_gba()
 	return execute_cycles;
 }
 
+#if 0 // def PSP_BUILD
 u64 last_screen_timestamp = 0;
+// u32 frame_speed = 15000;
 u32 frame_speed = 15000;
 
-#if 0 // def PSP_BUILD
 
 u32 real_frame_count = 0;
 u32 virtual_frame_count = 0;
@@ -679,37 +680,28 @@ void synchronize()
 
 #else
 
+ u32 skip_next_frame_flag = 0;
+ u32 virtual_frame_count = 0;
+ u32 num_skipped_frames = 0;
+ u32 real_frame_count = 0;
+ // u32 g_synchronize_flag = 1;
+ u32 vblank_count = 0;
 char fps_buffer[64];
-void synchronize()
-{
-	u64 new_ticks;
-	u64 time_delta = 16667;
+uint32_t next_tick;
 
-	get_ticks_us(&new_ticks);
-	time_delta = new_ticks - last_screen_timestamp;
-	last_screen_timestamp = new_ticks;
-	ticks_needed_total += time_delta;
+ void synchronize()
+ {
+ //  char char_buffer[64];
+   static u32 fps = 60;
+   static u32 frames_drawn = 0;
+   static u32 frames_drawn_count = 0;
 
-	skip_next_frame = 0;
-#ifndef ZAURUS
-	if((time_delta < frame_speed) && synchronize_flag)
-	{
-		delay_us(frame_speed - time_delta);
-	}
-#endif
-	frames++;
-
-	if(frames >= 60)
-	{
-		if(status_display) {
-			us_needed = (float)ticks_needed_total / frame_interval;
-			u32 fpsw = (u32)(1000000.0 / us_needed);
-			ticks_needed_total = 0;
-
-			sprintf(fps_buffer, "%d fps", fpsw);
-		}
+	if(next_tick < SDL_GetTicks()) {
+		next_tick = SDL_GetTicks() + 1000;
+		sprintf(fps_buffer, "FPS: %d Sync: %d", (int)frames_drawn, synchronize_flag);
 		frames = 0;
-		skipped_num_frame = 60;
+		frames_drawn = frames_drawn_count;
+		frames_drawn_count = 0;
 	}
 
 	if(status_display){
@@ -717,64 +709,233 @@ void synchronize()
 		print_string(fps_buffer, 0xFF00, 0x0000, 40, 40);
 	}
 
-	if(current_frameskip_type == manual_frameskip)
-	{
-		frameskip_counter = (frameskip_counter + 1) %
-		 (frameskip_value + 1);
-		if(random_skip)
-		{
-			if(frameskip_counter != (rand() % (frameskip_value + 1)))
-				skip_next_frame = 1;
-		}
-		else
-		{
-			if(frameskip_counter)
-				skip_next_frame = 1;
-		}
-#ifndef ZAURUS
-	}
-#else
-	} else if(current_frameskip_type == auto_frameskip) {
-		static struct timeval next1 = {0, 0};
-		static struct timeval now;
 
-		gettimeofday(&now, NULL);
-		if(next1.tv_sec == 0) {
-			next1 = now;
-			next1.tv_usec++;
-		}
-		if(timercmp(&next1, &now, >)) {
-			//struct timeval tdiff;
-		 if(synchronize_flag)
-			 do {
-					synchronize_sound();
-					gettimeofday(&now, NULL);
-			 } while (timercmp(&next1, &now, >));
-	 else
-			gettimeofday(&now, NULL);
-			//timersub(&next1, &now, &tdiff);
-		//usleep(tdiff.tv_usec/2);
-		//gettimeofday(&now, NULL);
-		skipped_num = 0;
-		next1 = now;
-		} else {
-			if(skipped_num < frameskip_value) {
-				skipped_num++;
-				skipped_num_frame--;
-				skip_next_frame = 1;
-			} else {
-				//synchronize_sound();
-				skipped_num = 0;
-				next1 = now;
-			}
-	}
-		next1.tv_usec += 16667;
-		if(next1.tv_usec >= 1000000) {
-			next1.tv_sec++;
-			next1.tv_usec -= 1000000;
-		}
-	}
-#endif
+   // フレームスキップ フラグの初期化
+   skip_next_frame_flag = 0;
+   // 内部フレーム値の増加
+   frames++;
+ 
+   switch(current_frameskip_type)
+   {
+   // オートフレームスキップ時
+     case auto_frameskip:
+       virtual_frame_count++;
+ 
+       // 内部フレーム数に遅れが出ている場合
+       if(real_frame_count > virtual_frame_count)
+       {
+         if(num_skipped_frames < frameskip_value)  // スキップしたフレームが設定より小さい
+         {
+           // 次のフレームはスキップ
+           skip_next_frame_flag = 1;
+           // スキップしたフレーム数を増加
+           num_skipped_frames++;
+         }
+         else
+         {
+           // 設定の上限に達した場合
+ //          real_frame_count = virtual_frame_count;
+           // スキップしたフレーム数は0に初期化
+           num_skipped_frames = 0;
+           frames_drawn_count++;
+         }
+       }
+ 
+       // 内部フレーム数が同じ場合
+       if(real_frame_count == virtual_frame_count)
+       {
+         // スキップしたフレーム数は0に初期化
+         num_skipped_frames = 0;
+         frames_drawn_count++;
+       }
+ 
+       // 内部フレーム数が実機を上回る場合
+       if(real_frame_count < virtual_frame_count)
+       {
+         num_skipped_frames = 0;
+         frames_drawn_count++;
+       }
+ 
+       // 内部フレーム数が実機を上回る場合
+       if((real_frame_count < virtual_frame_count) && (synchronize_flag) && (skip_next_frame_flag == 0))
+       {
+         // VBANK待ち
+         synchronize_sound();
+         // sceDisplayWaitVblankStart();
+         real_frame_count = 0;
+         virtual_frame_count = 0;
+       }
+       break;
+ 
+     // マニュアルフレームスキップ時
+     case manual_frameskip:
+       virtual_frame_count++;
+       // フレームスキップ数増加
+       num_skipped_frames = (num_skipped_frames + 1) % (frameskip_value + 1);
+       if(random_skip)
+       {
+         if(num_skipped_frames != (rand() % (frameskip_value + 1)))
+           skip_next_frame_flag = 1;
+         else
+           frames_drawn_count++;
+       }
+       else
+       {
+         // フレームスキップ数=0の時だけ画面更新
+         if(num_skipped_frames != 0)
+           skip_next_frame_flag = 1;
+         else
+           frames_drawn_count++;
+       }
+ 
+       // 内部フレーム数が実機を上回る場合
+       if((real_frame_count < virtual_frame_count) && (synchronize_flag) && (skip_next_frame_flag == 0))
+       {
+         // VBANK待ち
+         synchronize_sound();
+         // sceDisplayWaitVblankStart();
+       }
+       real_frame_count = 0;
+       virtual_frame_count = 0;
+       break;
+ 
+     // フレームスキップなし時
+     case no_frameskip:
+       frames_drawn_count++;
+       virtual_frame_count++;
+       if((real_frame_count < virtual_frame_count) && (synchronize_flag))
+       {
+         // 内部フレーム数が実機を上回る場合
+         // VBANK待ち
+         synchronize_sound();
+         // sceDisplayWaitVblankStart();
+       }
+       real_frame_count = 0;
+       virtual_frame_count = 0;
+       break;
+   }
+ 
+   // FPSのカウント
+   // 1/60秒のVBLANK割込みがあるので、タイマは使用しないようにした
+   // if(frames == 60)
+   // {
+   //   frames = 0;
+   //   fps = 3600 / vblank_count;
+   //   vblank_count = 0;
+   //   frames_drawn = frames_drawn_count;
+   //   frames_drawn_count = 0;
+   // }
+ 
+   // if(!synchronize_flag)
+     // PRINT_STRING_BG("--FF--", 0xFFFF, 0x000, 0, 10);
+ 
+
+
+
+
+
+
+
+
+
+
+
+// char fps_buffer[64];
+// void synchronize()
+// {
+// 	u64 new_ticks;
+// 	u64 time_delta = 16667;
+
+// 	get_ticks_us(&new_ticks);
+// 	time_delta = new_ticks - last_screen_timestamp;
+// 	last_screen_timestamp = new_ticks;
+// 	ticks_needed_total += time_delta;
+
+// 	skip_next_frame = 0;
+// #ifndef ZAURUS
+// 	if((time_delta < frame_speed) && synchronize_flag)
+// 	{
+// 		delay_us(frame_speed - time_delta);
+// 	}
+// #endif
+// 	frames++;
+
+// 	if(frames >= 60)
+// 	{
+// 		if(status_display) {
+// 			us_needed = (float)ticks_needed_total / frame_interval;
+// 			u32 fpsw = (u32)(1000000.0 / us_needed);
+// 			ticks_needed_total = 0;
+
+// 			sprintf(fps_buffer, "%d fps sync: %d", fpsw, synchronize_flag);
+// 		}
+// 		frames = 0;
+// 		skipped_num_frame = 60;
+// 	}
+
+// 	if(status_display){
+// 		print_string(fps_buffer, 0x000F, 0x0000, 41, 41);
+// 		print_string(fps_buffer, 0xFF00, 0x0000, 40, 40);
+// 	}
+
+// 	if(current_frameskip_type == manual_frameskip)
+// 	{
+// 		frameskip_counter = (frameskip_counter + 1) %
+// 		 (frameskip_value + 1);
+// 		if(random_skip)
+// 		{
+// 			if(frameskip_counter != (rand() % (frameskip_value + 1)))
+// 				skip_next_frame = 1;
+// 		}
+// 		else
+// 		{
+// 			if(frameskip_counter)
+// 				skip_next_frame = 1;
+// 		}
+// #ifndef ZAURUS
+// 	}
+// #else
+// 	} else if(current_frameskip_type == auto_frameskip) {
+// 		static struct timeval next1 = {0, 0};
+// 		static struct timeval now;
+
+// 		gettimeofday(&now, NULL);
+// 		if(next1.tv_sec == 0) {
+// 			next1 = now;
+// 			next1.tv_usec++;
+// 		}
+// 		if(timercmp(&next1, &now, >)) {
+// 			//struct timeval tdiff;
+// 		 if(synchronize_flag)
+// 			 do {
+// 					synchronize_sound();
+// 					gettimeofday(&now, NULL);
+// 			 } while (timercmp(&next1, &now, >));
+// 	 else
+// 			gettimeofday(&now, NULL);
+// 			//timersub(&next1, &now, &tdiff);
+// 		//usleep(tdiff.tv_usec/2);
+// 		//gettimeofday(&now, NULL);
+// 		skipped_num = 0;
+// 		next1 = now;
+// 		} else {
+// 			if(skipped_num < frameskip_value) {
+// 				skipped_num++;
+// 				skipped_num_frame--;
+// 				skip_next_frame = 1;
+// 			} else {
+// 				//synchronize_sound();
+// 				skipped_num = 0;
+// 				next1 = now;
+// 			}
+// 	}
+// 		next1.tv_usec += 16667;
+// 		if(next1.tv_usec >= 1000000) {
+// 			next1.tv_sec++;
+// 			next1.tv_usec -= 1000000;
+// 		}
+// 	}
+// #endif
 
 //  if(synchronize_flag == 0)
 //    print_string("--FF--", 0xFFFF, 0x000, 0, 0);
