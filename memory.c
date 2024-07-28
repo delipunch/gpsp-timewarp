@@ -1575,6 +1575,8 @@ void function_cc write_rtc(u32 address, u32 value)
 
                     time(&current_time_flat);
                     current_time_flat = (current_time_flat - 1641013200) * 24;
+                    // Subtracting 1641013200 from the current time resets the epoch to 2022-01-01 @ 00:00
+                    // Then multiply by timewarp factor (currently hardcoded to 24)
                     current_time = localtime(&current_time_flat);
 
                     day_of_week = current_time->tm_wday;
@@ -1604,6 +1606,8 @@ void function_cc write_rtc(u32 address, u32 value)
 
                     time(&current_time_flat);
                     current_time_flat = (current_time_flat - 1641013200) * 24;
+                    // Subtracting 1641013200 from the current time resets the epoch to 2022-01-01 @ 00:00
+                    // Then multiply by timewarp factor (currently hardcoded to 24)
                     current_time = localtime(&current_time_flat);
 
                     rtc_state = RTC_OUTPUT_DATA;
