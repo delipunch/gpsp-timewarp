@@ -42,7 +42,7 @@ ipk: $(TARGET)
 	@tar --owner=0 --group=0 -czvf /tmp/.gpsp-ipk/control.tar.gz -C /tmp/.gpsp-ipk/ control conffiles postinst
 	@tar --owner=0 --group=0 -czvf /tmp/.gpsp-ipk/data.tar.gz -C /tmp/.gpsp-ipk/root/ .
 	@echo 2.0 > /tmp/.gpsp-ipk/debian-binary
-	@ar r gpsp/gpsp.ipk /tmp/.gpsp-ipk/control.tar.gz /tmp/.gpsp-ipk/data.tar.gz /tmp/.gpsp-ipk/debian-binary
+	@ar r gpsp/gpsp-timewarp.ipk /tmp/.gpsp-ipk/control.tar.gz /tmp/.gpsp-ipk/data.tar.gz /tmp/.gpsp-ipk/debian-binary
 
 clean:
 	rm -f $(TARGET) $(OBJS)
