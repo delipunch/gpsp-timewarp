@@ -1,10 +1,10 @@
-Package: gpsp
-Version: 
-Description: RetroGame port of gpSP
+Package: gpsp-timewarp
+Version: 0.1
+Description: RetroGame port of gpSP, with fake RTC. Originally by pingflood.
 Section: emus
 Priority: optional
-Maintainer: pingflood
+Maintainer: delipunch
 Architecture: mipsel
-Homepage: https://github.com/pingflood/gpsp
+Homepage: https://github.com/delipunch/gpsp-timewarp
 Depends:
-Source: https://github.com/pingflood/gpsp
+Source: https://github.com/delipunch/gpsp-timewarp
